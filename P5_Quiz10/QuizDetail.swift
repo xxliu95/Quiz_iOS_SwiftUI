@@ -10,32 +10,34 @@ import SwiftUI
 
 struct QuizDetail: View {
     
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    //    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
     var quizItem: QuizItem
     var quizNum: Int
-
+    
     @Binding var score: [Int]
-
+    
     @State var answer: String = ""
     @State var showAlert = false
     @State var msg: String = ""
-
+    
     var alert: Alert {
         Alert(title: Text("Result"), message: Text(msg), dismissButton: .default(Text("OK")))
     }
     
     @EnvironmentObject var imageStore: ImageStore
     @EnvironmentObject var quizModel: Quiz10Model
-
+    
     
     var body: some View {
         
         ZStack {
-            if horizontalSizeClass == .compact {
+            return GeometryReader { proxy in
+            //            if horizontalSizeClass == .compact {
+            if proxy.size.width < proxy.size.height {
                 VStack (alignment: .leading) {
                     Spacer()
-                    Image(uiImage: self.imageStore.image(url: quizItem.attachment?.url))
+                    Image(uiImage: self.imageStore.image(url: self.quizItem.attachment?.url))
                         .resizable()
                         .scaledToFill()
                         .frame(minWidth: 0, maxWidth: .infinity,  alignment: Alignment.topLeading)
@@ -43,7 +45,7 @@ struct QuizDetail: View {
                         .clipped()
                         .cornerRadius(10)
                     HStack {
-                        Text("Question number \(quizNum)").fontWeight(.bold).font(.body)
+                        Text("Question number \(self.quizNum)").fontWeight(.bold).font(.body)
                             .padding(.leading, 15)
                             .padding(.top, 7)
                         Spacer()
@@ -58,17 +60,17 @@ struct QuizDetail: View {
                     }
                     Spacer()
                     
-                    Text(quizItem.question)
-                    .font(.title)
-                    .padding(.leading, 15)
+                    Text(self.quizItem.question)
+                        .font(.title)
+                        .padding(.leading, 15)
                     
                     Spacer()
-
+                    
                     VStack {
-                        TextField("Your Answer", text: $answer)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(minWidth: 0, maxWidth: .infinity)
-                        .padding(.horizontal, 10)
+                        TextField("Your Answer", text: self.$answer)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(minWidth: 0, maxWidth: .infinity)
+                            .padding(.horizontal, 10)
                         Button(action: {self.checkAnswer()}) {
                             HStack {
                                 Text("Check Answer")
@@ -82,32 +84,32 @@ struct QuizDetail: View {
                         .padding(.horizontal, 10)
                     }
                     HStack {
-                        Text("Score: \(score.count)").font(.caption).foregroundColor(.gray).padding(.leading, 15)
+                        Text("Score: \(self.score.count)").font(.caption).foregroundColor(.gray).padding(.leading, 15)
                         Spacer()
-                        Image(uiImage: self.imageStore.image(url: quizItem.author?.photo?.url))
-                        .resizable()
-                        .scaledToFill()
-                        .clipped()
-                        .clipShape(Circle())
-                        .frame(width: 25, height: 25)
-                        Text("Created by \(quizItem.author!.username)")
+                        Image(uiImage: self.imageStore.image(url: self.quizItem.author?.photo?.url))
+                            .resizable()
+                            .scaledToFill()
+                            .clipped()
+                            .clipShape(Circle())
+                            .frame(width: 25, height: 25)
+                        Text("Created by \(self.quizItem.author!.username)")
                             .font(.caption).padding(.trailing, 10)
                     }
                     
                 }
                 .padding(.horizontal, 15)
                 .edgesIgnoringSafeArea(.top)
-                .alert(isPresented: $showAlert, content: {self.alert})
-
-            } else {
+                .alert(isPresented: self.$showAlert, content: {self.alert})
+                
+        } else {
                 HStack {
                     VStack (alignment: .leading){
                         VStack (alignment: .leading){
                             
                             HStack {
-                                Text("Question number \(quizNum)").fontWeight(.bold).font(.body)
-                                .padding(.leading, 15)
-                                .padding(.top, 7)
+                                Text("Question number \(self.quizNum)").fontWeight(.bold).font(.body)
+                                    .padding(.leading, 15)
+                                    .padding(.top, 7)
                                 
                                 Spacer()
                                 Button(action: {self.toggleFavourite()}, label: {
@@ -120,16 +122,16 @@ struct QuizDetail: View {
                             }
                             
                             Spacer()
-                            Text(quizItem.question)
-                            .font(.title)
-                            .padding(.leading, 15)
+                            Text(self.quizItem.question)
+                                .font(.title)
+                                .padding(.leading, 15)
                             Spacer()
                         }
                         VStack (alignment: .leading){
-                            TextField("Your Answer", text: $answer)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .frame(minWidth: 0, maxWidth: .infinity)
-                            .padding(.horizontal, 10)
+                            TextField("Your Answer", text: self.$answer)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .frame(minWidth: 0, maxWidth: .infinity)
+                                .padding(.horizontal, 10)
                             Button(action: {self.checkAnswer()}) {
                                 HStack {
                                     Text("Check Answer")
@@ -144,40 +146,42 @@ struct QuizDetail: View {
                         }
                         HStack {
                             
-                            Image(uiImage: self.imageStore.image(url: quizItem.author?.photo?.url))
-                            .resizable()
-                            .scaledToFill()
-                            .clipped()
-                            .clipShape(Circle())
-                            .frame(width: 25, height: 25)
-                            Text("Created by \(quizItem.author!.username)")
+                            Image(uiImage: self.imageStore.image(url: self.quizItem.author?.photo?.url))
+                                .resizable()
+                                .scaledToFill()
+                                .clipped()
+                                .clipShape(Circle())
+                                .frame(width: 25, height: 25)
+                            Text("Created by \(self.quizItem.author!.username)")
                                 .font(.caption).padding(.trailing, 10)
                             Spacer()
                             
-                            Text("Score: \(score.count)").font(.caption).foregroundColor(.gray).padding(.trailing, 15)
+                            Text("Score: \(self.score.count)").font(.caption).foregroundColor(.gray).padding(.trailing, 15)
                         }
                         .padding(.top, 10)
-
+                        
                     }
                     .padding(.trailing, 25)
                     
                     VStack {
-                        Image(uiImage: self.imageStore.image(url: quizItem.attachment?.url))
-                        .resizable()
-                        .scaledToFill()
-                        .frame(minWidth: 0, maxWidth: .infinity,  alignment: Alignment.topLeading)
-                        .aspectRatio(1.1, contentMode: .fit)
-                        .clipped()
-                        .cornerRadius(10)
-                    
+                        Image(uiImage: self.imageStore.image(url: self.quizItem.attachment?.url))
+                            .resizable()
+                            .scaledToFill()
+                            .frame(minWidth: 0, maxWidth: .infinity,  alignment: Alignment.topLeading)
+                            .aspectRatio(1.1, contentMode: .fit)
+                            .clipped()
+                            .cornerRadius(10)
+                        
                     }
                 }
                 .padding(.vertical, 15)
-                .alert(isPresented: $showAlert, content: {self.alert})
+                .alert(isPresented: self.$showAlert, content: {self.alert})
                 
             }
+            }
+            
         }
-
+        
         
     }
     func checkAnswer() {
@@ -192,9 +196,9 @@ struct QuizDetail: View {
             msg = "Wrong Answer!"
         }
         self.showAlert.toggle()
-
+        
     }
-
+    
     func toggleFavourite() {
         
         self.quizModel.toggleFav(quizNum: quizNum)
@@ -208,9 +212,9 @@ struct QuizDetail: View {
         } else {
             request.httpMethod = "PUT"
         }
-
+        
         let task = session.uploadTask(with: request, fromFile: url!) {
-    
+            
             (data: Data?, res: URLResponse?, error: Error?) in
             if error == nil && (res as! HTTPURLResponse).statusCode == 200 {
                 print("Success")
@@ -219,6 +223,6 @@ struct QuizDetail: View {
             }
         }
         task.resume()
-
+        
     }
 }

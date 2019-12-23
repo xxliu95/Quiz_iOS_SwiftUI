@@ -85,6 +85,7 @@ struct ContentView: View {
             self.score = defaults.object(forKey: "score") as? [Int] ?? []
         })
         .navigationViewStyle(StackNavigationViewStyle())
+//        .navigationViewStyle(DoubleColumnNavigationViewStyle())
     }
 }
 
