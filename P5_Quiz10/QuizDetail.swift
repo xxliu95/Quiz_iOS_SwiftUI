@@ -16,11 +16,12 @@ struct QuizDetail: View {
     var quizNum: Int
 
     @Binding var score: [Int]
-    
+    var favourite: Bool = false
+
     @State var answer: String = ""
     @State var showAlert = false
     @State var msg: String = ""
-    
+
     var alert: Alert {
         Alert(title: Text("Result"), message: Text(msg), dismissButton: .default(Text("OK")))
     }
@@ -44,6 +45,15 @@ struct QuizDetail: View {
                         Text("Question number \(quizNum)").fontWeight(.bold).font(.body)
                             .padding(.leading, 15)
                             .padding(.top, 7)
+                        Spacer()
+                        Button(action: {self.toggleFavourite()}, label: {
+                            Image(self.favourite ? "heart1" : "heart0")
+                                .resizable().frame(width: 40, height: 40)
+                                .padding(.trailing, 10)
+                                .padding(.top, 7)
+                                .foregroundColor(.red)
+                        })
+                        
                     }
                     Spacer()
                     
@@ -93,9 +103,20 @@ struct QuizDetail: View {
                     VStack (alignment: .leading){
                         VStack (alignment: .leading){
                             
-                            Text("Question number \(quizNum)").fontWeight(.bold).font(.body)
-                            .padding(.leading, 15)
-                            .padding(.top, 7)
+                            HStack {
+                                Text("Question number \(quizNum)").fontWeight(.bold).font(.body)
+                                .padding(.leading, 15)
+                                .padding(.top, 7)
+                                
+                                Spacer()
+                                Button(action: {self.toggleFavourite()}, label: {
+                                    Image(self.favourite ? "heart1" : "heart0")
+                                        .resizable().frame(width: 40, height: 40)
+                                        .padding(.trailing, 10)
+                                        .padding(.top, 7)
+                                        .foregroundColor(.red)
+                                })
+                            }
                             
                             Spacer()
                             Text(quizItem.question)
@@ -155,15 +176,11 @@ struct QuizDetail: View {
                 
             }
         }
-//        .navigationBarItems(trailing:
-//            Button(action: {self.quizModel.download()}, label: {
-//                Image(\(quizItem.favourite ? "Heart1" : "Heart0")).resizable().frame(width: 20, height: 20).foregroundColor(.black)
-//            })
-            
-        
+
         
     }
     func checkAnswer() {
+        print("Debug: es \(quizItem.favourite)")
         if answer.lowercased() == quizItem.answer.lowercased() {
             var scoreSet = Set(self.score)
             scoreSet.insert(quizItem.id)
@@ -178,31 +195,30 @@ struct QuizDetail: View {
 
     }
 
-//    func toggleFavourite() {
-//        let config = URLSessionConfiguration.default
-//        let session = URLSEssion(configuration: config)
-//        let url = URL(string: "https://quiz.dit.upm.es/api/users/tokenOwner/favourites/quizId?token=8606ca3284a0e9615d99")
-//        var request = URLRequest(url: url)
-//        if self.quizItem.favourite {
-//            request.httpMethod = "DELETE"
-//        } else {
-//            request.httpMethod = "PUT"
-//        }
-//
-//        let task = session.dataTaskWithRequest(request) {
-//            (data, response, error) -> Void in
-//
-//            if error != nil {
-//                print(error!.localizedDescription)
-//                return
-//            }
-//
-//            let code = (res as! HTTPURLResponse).statusCode
-//            if code == 200 {
-//                print("Subido")
-//            } else {
-//                print("HTTP status code \(code)")
-//            }
-//        }
-//    }
+    func toggleFavourite() {
+        
+
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config)
+        let url = URL(string: "https://quiz.dit.upm.es/api/users/tokenOwner/favourites/\( self.quizItem.id)?token=8606ca3284a0e9615d99")
+        var request = URLRequest(url: url!)
+        if self.quizItem.favourite {
+            request.httpMethod = "DELETE"
+        } else {
+            request.httpMethod = "PUT"
+        }
+
+        let task = session.uploadTask(with: request, fromFile: url!) {
+    
+            (data: Data?, res: URLResponse?, error: Error?) in
+            if error == nil && (res as! HTTPURLResponse).statusCode == 200 {
+                print("Añadido a favorito")
+                print("Debug: cambiado a \(self.favourite)")
+            } else {
+                print(error!.localizedDescription)
+            }
+        }
+        task.resume()
+
+    }
 }

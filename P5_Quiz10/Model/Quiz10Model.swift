@@ -18,7 +18,7 @@ struct QuizItem: Codable, Identifiable, Equatable {
     let answer: String
     let author: Author?
     let attachment: Attachment?
-    let favourite: Bool
+    var favourite: Bool
     let tips: [String]
     
     struct Author: Codable {
@@ -58,6 +58,7 @@ class Quiz10Model: ObservableObject {
                 
                 let decoder = JSONDecoder()
                 let quizzes = try decoder.decode([QuizItem].self, from: data)
+                
                 
                 DispatchQueue.main.async {
                     self.quizzes = quizzes
