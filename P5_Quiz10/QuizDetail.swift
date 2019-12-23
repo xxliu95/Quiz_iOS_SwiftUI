@@ -160,7 +160,8 @@ struct QuizDetail: View {
 //                Image(\(quizItem.favourite ? "Heart1" : "Heart0")).resizable().frame(width: 20, height: 20).foregroundColor(.black)
 //            })
             
-        )
+        
+        
     }
     func checkAnswer() {
         if answer.lowercased() == quizItem.answer.lowercased() {
