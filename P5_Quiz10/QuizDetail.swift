@@ -16,7 +16,6 @@ struct QuizDetail: View {
     var quizNum: Int
 
     @Binding var score: [Int]
-    var favourite: Bool = false
 
     @State var answer: String = ""
     @State var showAlert = false
@@ -27,6 +26,8 @@ struct QuizDetail: View {
     }
     
     @EnvironmentObject var imageStore: ImageStore
+    @EnvironmentObject var quizModel: Quiz10Model
+
     
     var body: some View {
         
@@ -47,7 +48,7 @@ struct QuizDetail: View {
                             .padding(.top, 7)
                         Spacer()
                         Button(action: {self.toggleFavourite()}, label: {
-                            Image(self.favourite ? "heart1" : "heart0")
+                            Image(self.quizItem.favourite ? "heart1" : "heart0")
                                 .resizable().frame(width: 40, height: 40)
                                 .padding(.trailing, 10)
                                 .padding(.top, 7)
@@ -110,7 +111,7 @@ struct QuizDetail: View {
                                 
                                 Spacer()
                                 Button(action: {self.toggleFavourite()}, label: {
-                                    Image(self.favourite ? "heart1" : "heart0")
+                                    Image(self.quizItem.favourite ? "heart1" : "heart0")
                                         .resizable().frame(width: 40, height: 40)
                                         .padding(.trailing, 10)
                                         .padding(.top, 7)
@@ -180,7 +181,6 @@ struct QuizDetail: View {
         
     }
     func checkAnswer() {
-        print("Debug: es \(quizItem.favourite)")
         if answer.lowercased() == quizItem.answer.lowercased() {
             var scoreSet = Set(self.score)
             scoreSet.insert(quizItem.id)
@@ -197,7 +197,8 @@ struct QuizDetail: View {
 
     func toggleFavourite() {
         
-
+        self.quizModel.toggleFav(quizNum: quizNum)
+        
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
         let url = URL(string: "https://quiz.dit.upm.es/api/users/tokenOwner/favourites/\( self.quizItem.id)?token=8606ca3284a0e9615d99")
@@ -212,8 +213,7 @@ struct QuizDetail: View {
     
             (data: Data?, res: URLResponse?, error: Error?) in
             if error == nil && (res as! HTTPURLResponse).statusCode == 200 {
-                print("Añadido a favorito")
-                print("Debug: cambiado a \(self.favourite)")
+                print("Success")
             } else {
                 print(error!.localizedDescription)
             }

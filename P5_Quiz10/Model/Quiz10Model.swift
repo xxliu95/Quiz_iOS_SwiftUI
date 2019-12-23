@@ -38,6 +38,10 @@ class Quiz10Model: ObservableObject {
     
     @Published var quizzes = [QuizItem]()
     
+    func toggleFav(quizNum: Int) {
+        quizzes[quizNum - 1].favourite = !quizzes[quizNum - 1].favourite
+    }
+    
     func download() {
         let TOKEN = "8606ca3284a0e9615d99"
         let surl = "https://quiz.dit.upm.es/api/quizzes/random10wa?token=\(TOKEN)"

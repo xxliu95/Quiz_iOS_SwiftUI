@@ -14,6 +14,7 @@ struct ContentView: View {
         
     @State var score: [Int] = [Int]()
 
+    @EnvironmentObject var imageStore: ImageStore
     @EnvironmentObject var quizModel: Quiz10Model
 
     var body: some View {
@@ -31,8 +32,42 @@ struct ContentView: View {
                 ForEach(quizModel.quizzes) { quizItem in
                     NavigationLink(destination:
                     QuizDetail(quizItem: quizItem, quizNum: self.quizModel.quizzes.firstIndex(of: quizItem)!+1, score: bindingScore)) {
-                        QuizRow(quizItem: quizItem)
-                    }
+                        HStack {
+                            ZStack (alignment: .bottomTrailing){
+                                Image(uiImage: self.imageStore.image(url: quizItem.attachment?.url))
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 75, height: 75)
+                                .clipped()
+                                .cornerRadius(75)
+                                //.padding(.all, 5)
+                                
+                                Image((quizItem.favourite ? "heart1" : "")).resizable().frame(width: 20, height: 20).offset(x: 5, y: 5)
+                                
+                            }
+                            //.shadow(radius: 5) //no lo pongo porque si la imagen que ha subido tiene fondo trasparente se ve mal
+                            .padding(.trailing, 10)
+                            //.padding(.vertical, 5)
+                            VStack (alignment: .leading){
+                                Spacer()
+                                HStack {
+                                    Text(quizItem.question)
+                                        .font(.headline)
+                                }
+                                Spacer()
+                                HStack {
+                                    Text("Created by \(quizItem.author!.username)")
+                                        .font(.caption)
+                                    Spacer()
+                                    Image(uiImage: self.imageStore.image(url: quizItem.author?.photo?.url))
+                                    .resizable()
+                                    .scaledToFill()
+                                    .clipped()
+                                    .clipShape(Circle())
+                                    .frame(width: 25, height: 25)
+                                }
+                            }
+                        }                    }
                 }
             }
             .navigationBarTitle(Text("Quiz Game"))
